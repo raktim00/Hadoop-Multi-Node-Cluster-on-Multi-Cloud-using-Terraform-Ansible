@@ -1,0 +1,78 @@
+---
+- name: Checking SSH connectivity to Hadoop Namenode Instance
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Wait for AWS Namenode Instance SSH to come up
+      wait_for:
+        host: "{{ groups['aws_hadoop_namenode'][0] }}"
+        port: 22
+        state: started
+
+- name: Deploying Hadoop Namenode Role on AWS Instance
+  hosts: aws_hadoop_namenode
+  roles:
+    - role: hadoop_namenode
+
+- name: Checking SSH connectivity to Hadoop Datanode Instance
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Wait for GCP Datanode Instance SSH to come up
+      wait_for:
+        host: "{{ groups['az_gcp_hadoop_datanode'][0] }}"
+        port: 22
+        state: started
+
+    - name: Wait for Azure Datanode Instance SSH to come up
+      wait_for:
+        host: "{{ groups['az_gcp_hadoop_datanode'][1] }}"
+        port: 22
+        state: started
+
+- name: Deploying Hadoop Datanode Role on GCP & Azure Instances
+  hosts: az_gcp_hadoop_datanode
+  roles:
+    - role: hadoop_datanode
+
+- name: Checking SSH connectivity to Hadoop Jobtracker Instance
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Wait for AWS Jobtracker Instance SSH to come up
+      wait_for:
+        host: "{{ groups['aws_hadoop_jobtracker'][0] }}"
+        port: 22
+        state: started
+
+- name: Deploying Hadoop Jobtracker Role on AWS Instance
+  hosts: aws_hadoop_jobtracker
+  roles:
+    - role: hadoop_jobtracker
+
+- name: Checking SSH connectivity to Hadoop Tasktracker Instance
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Wait for GCP Datanode Instance SSH to come up
+      wait_for:
+        host: "{{ groups['az_gcp_hadoop_tasktracker'][0] }}"
+        port: 22
+        state: started
+
+    - name: Wait for Azure Datanode Instance SSH to come up
+      wait_for:
+        host: "{{ groups['az_gcp_hadoop_tasktracker'][1] }}"
+        port: 22
+        state: started
+
+- name: Deploying Hadoop Tasktracker Role on GCP & Azure Instances
+  hosts: az_gcp_hadoop_tasktracker
+  roles:
+    - role: hadoop_tasktracker
+
+- name: Setting up Hadoop Client on local node
+  hosts: hadoop_client_node
+  roles:
+    - role: hadoop_client
+...

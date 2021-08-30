@@ -1,0 +1,67 @@
+---
+# tasks file for hadoop_client
+- name: Download Java Software
+  get_url:
+    url: https://hadoop-softwares.s3.ap-south-1.amazonaws.com/jdk-8u171-linux-x64.rpm
+    dest: /root/java.rpm
+
+- name: Download Hadoop Software
+  get_url:
+    url: https://hadoop-softwares.s3.ap-south-1.amazonaws.com/hadoop-1.2.1-1.x86_64.rpm
+    dest: /root/hadoop.rpm
+
+- name: Installing Hadoop & JDK Packages
+  command : "rpm -i /root/{{ item }} --force"
+  loop: "{{ pkgs_name }}"
+
+- name: Configure core-site file 
+  template:
+    src: "core-site.xml.j2"
+    dest: "/etc/hadoop/core-site.xml"
+
+- name: Configure mapred-site file 
+  template:
+    src: "mapred-site.xml.j2"
+    dest: "/etc/hadoop/mapred-site.xml"
+
+- name: Download Pig Software
+  get_url:
+    url: https://hadoop-softwares.s3.ap-south-1.amazonaws.com/pig-0.12.1.tar.gz
+    dest: /root/pig.tar.gz
+
+- name: Unarchiving Pig Software
+  unarchive:
+    src: /root/pig.tar.gz
+    dest: /root
+    remote_src: yes
+
+- name: Setting up PIG_HOME env variable
+  lineinfile:
+    path: '/root/.bashrc'
+    line: export PIG_HOME=/root/pig-0.12.1
+
+- name: Adding Pig to PATH variable
+  lineinfile:
+    path: '/root/.bashrc'
+    line: PATH=/root/pig-0.12.1/bin:$PATH
+    
+- name: Download Hive Software
+  get_url:
+    url: https://hadoop-softwares.s3.ap-south-1.amazonaws.com/apache-hive-0.13.1-bin.tar.gz
+    dest: /root/hive.tar.gz
+
+- name: Unarchiving Hive Software
+  unarchive:
+    src: /root/hive.tar.gz
+    dest: /root
+    remote_src: yes
+
+- name: Setting up HIVE_HOME env variable
+  lineinfile:
+    path: '/root/.bashrc'
+    line: export HIVE_HOME=/root/apache-hive-0.13.1-bin
+
+- name: Adding Hive to PATH variable
+  lineinfile:
+    path: '/root/.bashrc'
+    line: PATH=/root/apache-hive-0.13.1-bin/bin:$PATH

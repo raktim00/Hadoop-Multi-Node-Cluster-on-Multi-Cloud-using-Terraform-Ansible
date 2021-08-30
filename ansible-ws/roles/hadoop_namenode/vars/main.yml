@@ -1,0 +1,8 @@
+---
+# vars file for hadoop_namenode
+pkgs_name:
+ - "java.rpm"
+ - "hadoop.rpm"
+
+hadoop_folder:
+ - "/nn"

@@ -1,0 +1,29 @@
+---
+# tasks file for hadoop_tasktracker
+- name: Download Java Software
+  get_url:
+    url: https://hadoop-softwares.s3.ap-south-1.amazonaws.com/jdk-8u171-linux-x64.rpm
+    dest: /root/java.rpm
+
+- name: Download Hadoop Software
+  get_url:
+    url: https://hadoop-softwares.s3.ap-south-1.amazonaws.com/hadoop-1.2.1-1.x86_64.rpm
+    dest: /root/hadoop.rpm
+ 
+- name: Install Packages
+  command : "rpm -i /root/{{ item }} --force"
+  loop: "{{ pkgs_name }}"
+
+- name: Configure mapred-site file
+  template:
+    src: "mapred-site.xml.j2"
+    dest: "/etc/hadoop/mapred-site.xml"
+
+- name: Starting tasktracker service
+  shell: "hadoop-daemon.sh start tasktracker"
+  
+- name: Making Hadoop Daemon Service Permanent
+  lineinfile:
+    path: /etc/rc.d/rc.local
+    line: hadoop-daemon.sh start tasktracker
+    mode: '0755'

@@ -1,0 +1,5 @@
+---
+# vars file for hadoop_jobtracker
+pkgs_name:
+ - "java.rpm"
+ - "hadoop.rpm"

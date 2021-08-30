@@ -1,0 +1,42 @@
+---
+# tasks file for hadoop_namenode
+- name: Download Java Software
+  get_url:
+    url: https://hadoop-softwares.s3.ap-south-1.amazonaws.com/jdk-8u171-linux-x64.rpm
+    dest: /root/java.rpm
+
+- name: Download Hadoop Software
+  get_url:
+    url: https://hadoop-softwares.s3.ap-south-1.amazonaws.com/hadoop-1.2.1-1.x86_64.rpm
+    dest: /root/hadoop.rpm
+
+- name: Install Packages
+  command : "rpm -i /root/{{ item }} --force"
+  loop: "{{ pkgs_name }}"
+
+- name: Configure core-site file 
+  copy:
+    src: "core-site.xml"
+    dest: "/etc/hadoop/core-site.xml"
+
+- name: Configure hdfs-site file 
+  template:
+    src: "hdfs-site.xml.j2"
+    dest: "/etc/hadoop/hdfs-site.xml"
+        
+- name: Creting Directory for namenode
+  file:
+    path: "{{ hadoop_folder }}"
+    state: directory
+    
+- name: Hadoop Namenode Format    
+  shell: "echo Y | hadoop namenode -format"
+
+- name: Starting Namenode Service
+  shell: "hadoop-daemon.sh start namenode"
+  
+- name: Making Hadoop Daemon Service Permanent
+  lineinfile:
+    path: /etc/rc.d/rc.local
+    line: hadoop-daemon.sh start namenode
+    mode: '0755'

@@ -1,0 +1,14 @@
+[aws_hadoop_namenode]
+
+
+[aws_hadoop_jobtracker]
+
+
+[az_gcp_hadoop_datanode]
+
+
+[az_gcp_hadoop_tasktracker]
+
+
+[hadoop_client_node]
+192.168.99.103
